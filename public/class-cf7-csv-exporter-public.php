@@ -100,4 +100,75 @@ class Cf7_Csv_Exporter_Public {
 
 	}
 
+
+	function cf7_export_to_csv_on_submit($contact_form) {
+		/**
+		 * This function exports Contact Form 7 submissions 
+		 * to a CSV file on form submission.
+		 */
+	
+		$option_name_contact_form_id = 'contact_form_id_for_csv_exporter';
+		$target_form_id = get_option($option_name_contact_form_id);
+	
+		// Check if the form ID matches
+		error_log('CF7 Export Triggered');
+		$form_id = (string) $contact_form->id();
+		error_log('Form ID: ' . $form_id);
+	
+		if ($form_id !== $target_form_id) {
+			error_log('Form ID does not match. Expected: ' . $target_form_id . ', Found: ' . $form_id);
+			return;
+		}
+	
+		$submission = WPCF7_Submission::get_instance();
+		if (!$submission) {
+			error_log('No submission instance found');
+			return;
+		}
+	
+		$data = $submission->get_posted_data();
+		if (empty($data)) {
+			error_log('No data found');
+			return;
+		}
+	
+		$current_page_url = get_permalink(get_the_ID());
+		error_log("Current Url: " . $current_page_url);
+
+		$upload_dir = wp_upload_dir();
+		$csv_dir = $upload_dir['basedir'] . '/cf7-submissions/';
+		$csv_file = $csv_dir . 'submissions.csv';
+	
+		error_log('CSV file path: ' . $csv_file);
+	
+		// Ensure the directory exists
+		if (!file_exists($csv_dir)) {
+			if (!wp_mkdir_p($csv_dir)) {
+				error_log('Failed to create directory: ' . $csv_dir);
+				return;
+			}
+		}
+	
+		// Open the file in append mode
+		$file = fopen($csv_file, 'a');
+		if ($file === false) {
+			error_log('Failed to open file for writing');
+			return;
+		}
+	
+		// Write the header row only if the file is new
+		if (filesize($csv_file) === 0) {
+			fputcsv($file, array_keys($data));
+		}
+	
+		// Write the data row
+		fputcsv($file, $data);
+	
+		// Close the file
+		fclose($file);
+	
+		error_log('CSV Exported to ' . $csv_file);
+	}
+	
+
 }

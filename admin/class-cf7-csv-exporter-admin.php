@@ -100,4 +100,38 @@ class Cf7_Csv_Exporter_Admin {
 
 	}
 
+	/**
+     * Register the administration menu for this plugin into the WordPress Dashboard menu.
+     *
+     * @since    1.0.0
+     */
+    public function add_cf7_csv_exporter_admin_menu() {
+
+		/**
+		* Add hook for admin menu
+		*/
+
+		register_setting('cf7_csv_exporter_admin_menu', 'contact_form_id_for_csv_exporter');
+
+        add_menu_page(
+            __('CF7 CSV Exporter'),
+            __('CF7 CSV Exporter'),
+            'manage_options',
+            $this->plugin_name,
+            array($this, 'display_cf7_csv_exporter_admin_menu'),
+        );
+    }
+
+	public function display_cf7_csv_exporter_admin_menu() {
+
+		/**
+		* Get admin page
+		*/
+
+		include_once( 'partials/cf7-csv-exporter-admin-display.php' );
+
+		cf7_csv_exporter_admin_page();
+
+    }
+
 }

@@ -157,6 +157,8 @@ class Cf7_Csv_Exporter {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_cf7_csv_exporter_admin_menu', 10 );
+
 	}
 
 	/**
@@ -172,6 +174,8 @@ class Cf7_Csv_Exporter {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		
+		$this->loader->add_action( 'wpcf7_mail_sent', $plugin_public, 'cf7_export_to_csv_on_submit' );
 
 	}
 
