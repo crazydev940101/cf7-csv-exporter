@@ -100,13 +100,8 @@ class Cf7_Csv_Exporter_Public {
 
 	}
 
-
 	function cf7_export_to_csv_on_submit($contact_form) {
-		/**
-		 * This function exports Contact Form 7 submissions 
-		 * to a CSV file on form submission.
-		 */
-	
+		// Your existing code
 		$option_name_contact_form_id = 'contact_form_id_for_csv_exporter';
 		$target_form_id = get_option($option_name_contact_form_id);
 	
@@ -132,12 +127,32 @@ class Cf7_Csv_Exporter_Public {
 			return;
 		}
 	
-		$current_page_url = get_permalink(get_the_ID());
-		error_log("Current Url: " . $current_page_url);
-
+		error_log("Current Url: " . $_SERVER['HTTP_REFERER']);
+	
 		$upload_dir = wp_upload_dir();
 		$csv_dir = $upload_dir['basedir'] . '/cf7-submissions/';
-		$csv_file = $csv_dir . 'submissions.csv';
+		
+
+		if (isset($_SERVER['HTTP_REFERER'])) {
+			$referer = $_SERVER['HTTP_REFERER'];
+		
+			if (strpos($referer, 'test-page') !== false) {
+				$csv_file = $csv_dir . 'test-submissions.csv';
+			} else if (strpos($referer, 'rpm-builder') !== false) {
+				$csv_file = $csv_dir . 'rpm-submissions.csv';
+			} else if (strpos($referer, 'tw-builder') !== false) {
+				$csv_file = $csv_dir . 'tw-submissions.csv';
+			} else if (strpos($referer, 'fr-builder') !== false) {
+				$csv_file = $csv_dir . 'fr-submissions.csv';
+			} else {
+				// Handle case where referer doesn't match any expected patterns
+				error_log('HTTP_REFERER does not match any expected patterns');
+				return;
+			}
+		} else {
+			error_log('HTTP_REFERER is not set');
+			return;
+		}
 	
 		error_log('CSV file path: ' . $csv_file);
 	
@@ -156,6 +171,9 @@ class Cf7_Csv_Exporter_Public {
 			return;
 		}
 	
+		// Add current date to data
+		$data['Date'] = date('Y-m-d H:i:s'); // Include timestamp
+	
 		// Write the header row only if the file is new
 		if (filesize($csv_file) === 0) {
 			fputcsv($file, array_keys($data));
@@ -169,6 +187,7 @@ class Cf7_Csv_Exporter_Public {
 	
 		error_log('CSV Exported to ' . $csv_file);
 	}
+	
 	
 
 }
