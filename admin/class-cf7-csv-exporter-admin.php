@@ -113,6 +113,14 @@ class Cf7_Csv_Exporter_Admin {
 
 		register_setting('cf7_csv_exporter_admin_menu', 'contact_form_id_for_csv_exporter');
 
+		register_setting('cf7_csv_exporter_admin_menu', 'sftp_host_for_csv_exporter');
+
+		register_setting('cf7_csv_exporter_admin_menu', 'sftp_port_for_csv_exporter');
+
+		register_setting('cf7_csv_exporter_admin_menu', 'sftp_user_for_csv_exporter');
+
+		register_setting('cf7_csv_exporter_admin_menu', 'sftp_pass_for_csv_exporter');
+
         add_menu_page(
             __('CF7 CSV Exporter'),
             __('CF7 CSV Exporter'),

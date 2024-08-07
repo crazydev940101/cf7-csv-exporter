@@ -17,7 +17,7 @@ function cf7_csv_exporter_admin_register() {
     // Add action for handling Location ID
     add_action( "admin_init", 'save_field_callback' );     
     add_settings_section('custom_admin_settings_section', '','section_callback', 'cf7_csv_exporter_admin_menu');
-    add_settings_field('custom_input_field', 'Contact Form ID for CSV Exporter', 'input_field_callback', 'cf7_csv_exporter_admin_menu', 'custom_admin_settings_section');
+    add_settings_field('custom_input_field', 'Contact Form ID & SFTP Info', 'input_field_callback', 'cf7_csv_exporter_admin_menu', 'custom_admin_settings_section');
 }
 
 function section_callback() {
@@ -26,7 +26,7 @@ function section_callback() {
     * Show section part
     */
 
-    echo '<h2>Input the contact form ID for CSV exporter</h2>';
+    echo '<h2>Input the contact form ID & SFTP Info for CSV exporter</h2>';
 }
 
 function input_field_callback() {
@@ -37,10 +37,46 @@ function input_field_callback() {
 
     $option_name_contact_form_id = 'contact_form_id_for_csv_exporter';
 
+    $option_name_sftp_host = 'sftp_host_for_csv_exporter';
+
+    $option_name_sftp_port = 'sftp_port_for_csv_exporter';
+
+    $option_name_sftp_user = 'sftp_user_for_csv_exporter';
+
+    $option_name_sftp_pass = 'sftp_pass_for_csv_exporter';
+
     $value_contact_form_id = get_option($option_name_contact_form_id);
+
+    $value_sftp_host = get_option($option_name_sftp_host);
+
+    $value_sftp_port = get_option($option_name_sftp_port);
+
+    $value_sftp_user = get_option($option_name_sftp_user);
+
+    $value_sftp_pass = get_option($option_name_sftp_pass);
 
     echo '<label>Contact Form ID: </label>';
     echo '<input type="text" id="contact_form_id_for_csv_exporter" name="' . $option_name_contact_form_id . '" value="' . esc_attr($value_contact_form_id) . '" />';
+
+    echo '<br/><br/>';
+
+    echo '<label>SFTP Host: </label>';
+    echo '<input type="text" id="sftp_host_for_csv_exporter" name="' . $option_name_sftp_host . '" value="' . esc_attr($value_sftp_host) . '" />';
+
+    echo '<br/><br/>';
+
+    echo '<label>SFTP Port: </label>';
+    echo '<input type="text" id="sftp_port_for_csv_exporter" name="' . $option_name_sftp_port . '" value="' . esc_attr($value_sftp_port) . '" />';
+
+    echo '<br/><br/>';
+
+    echo '<label>SFTP Username: </label>';
+    echo '<input type="text" id="sftp_user_for_csv_exporter" name="' . $option_name_sftp_user . '" value="' . esc_attr($value_sftp_user) . '" />';
+
+    echo '<br/><br/>';
+
+    echo '<label>SFTP Password: </label>';
+    echo '<input type="text" id="sftp_pass_for_csv_exporter" name="' . $option_name_sftp_pass . '" value="' . esc_attr($value_sftp_pass) . '" />';
 }
 
 function save_field_callback() {
@@ -51,8 +87,32 @@ function save_field_callback() {
 
     $option_name_contact_form_id = 'contact_form_id_for_csv_exporter';
 
+    $option_name_sftp_host = 'sftp_host_for_csv_exporter';
+
+    $option_name_sftp_port = 'sftp_port_for_csv_exporter';
+
+    $option_name_sftp_user = 'sftp_user_for_csv_exporter';
+
+    $option_name_sftp_pass = 'sftp_pass_for_csv_exporter';
+
     if (isset($_POST[$option_name_contact_form_id])) {
         update_option($option_name_contact_form_id, sanitize_text_field($_POST[$option_name_contact_form_id]));
+    }
+
+    if (isset($_POST[$option_name_sftp_host])) {
+        update_option($option_name_sftp_host, sanitize_text_field($_POST[$option_name_sftp_host]));
+    }
+
+    if (isset($_POST[$option_name_sftp_port])) {
+        update_option($option_name_sftp_port, sanitize_text_field($_POST[$option_name_sftp_port]));
+    }
+
+    if (isset($_POST[$option_name_sftp_user])) {
+        update_option($option_name_sftp_user, sanitize_text_field($_POST[$option_name_sftp_user]));
+    }
+
+    if (isset($_POST[$option_name_sftp_pass])) {
+        update_option($option_name_sftp_pass, sanitize_text_field($_POST[$option_name_sftp_pass]));
     }
 
 }

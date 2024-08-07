@@ -20,6 +20,10 @@
  * @subpackage Cf7_Csv_Exporter/public
  * @author     Ariel Cruz <ariel@ieproductions.com>
  */
+
+use phpseclib3\Net\SFTP;
+use phpseclib3\Crypt\RSA;
+
 class Cf7_Csv_Exporter_Public {
 
 	/**
@@ -131,11 +135,10 @@ class Cf7_Csv_Exporter_Public {
 	
 		$upload_dir = wp_upload_dir();
 		$csv_dir = $upload_dir['basedir'] . '/cf7-submissions/';
-		
-
+	
 		if (isset($_SERVER['HTTP_REFERER'])) {
 			$referer = $_SERVER['HTTP_REFERER'];
-		
+	
 			if (strpos($referer, 'test-page') !== false) {
 				$csv_file = $csv_dir . 'test-submissions.csv';
 			} else if (strpos($referer, 'rpm-builder') !== false) {
@@ -186,6 +189,52 @@ class Cf7_Csv_Exporter_Public {
 		fclose($file);
 	
 		error_log('CSV Exported to ' . $csv_file);
+
+		$option_name_sftp_host = 'sftp_host_for_csv_exporter';
+
+		$option_name_sftp_port = 'sftp_port_for_csv_exporter';
+	
+		$option_name_sftp_user = 'sftp_user_for_csv_exporter';
+	
+		$option_name_sftp_pass = 'sftp_pass_for_csv_exporter';
+
+		$value_sftp_host = get_option($option_name_sftp_host);
+
+		$value_sftp_port = get_option($option_name_sftp_port);
+	
+		$value_sftp_user = get_option($option_name_sftp_user);
+	
+		$value_sftp_pass = get_option($option_name_sftp_pass);
+
+		// SFTP details
+		$sftp_host = $value_sftp_host;
+		$sftp_port = 22; // Default SFTP port
+		$sftp_username = $value_sftp_user;
+		$sftp_password = $value_sftp_pass;
+		$remote_file = '/import/cf7-submissions/' . basename($csv_file);
+	
+		// Create SFTP connection
+		$sftp = new SFTP($sftp_host, $sftp_port);
+		if (!$sftp->login($sftp_username, $sftp_password)) {
+			error_log('SFTP login failed');
+			return;
+		}
+
+		// Ensure the remote directory exists
+		$remote_dir = dirname($remote_file);
+		if (!$sftp->is_dir($remote_dir)) {
+			if (!$sftp->mkdir($remote_dir, -1, true)) {
+				error_log('Failed to create remote directory: ' . $remote_dir);
+				return;
+			}
+		}
+	
+		// Upload file to SFTP server
+		if ($sftp->put($remote_file, $csv_file, SFTP::SOURCE_LOCAL_FILE)) {
+			error_log('Successfully uploaded ' . $csv_file . ' to ' . $remote_file);
+		} else {
+			error_log('Failed to upload ' . $csv_file . ' to ' . $remote_file);
+		}
 	}
 	
 	

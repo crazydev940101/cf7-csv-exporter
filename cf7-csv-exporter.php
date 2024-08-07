@@ -64,6 +64,8 @@ register_deactivation_hook( __FILE__, 'deactivate_cf7_csv_exporter' );
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-cf7-csv-exporter.php';
 
+// Add this at the top of your PHP file to include Composer's autoloader
+require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
 /**
  * Begins execution of the plugin.
  *
