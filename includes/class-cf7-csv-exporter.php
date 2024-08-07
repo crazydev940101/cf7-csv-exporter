@@ -81,7 +81,7 @@ class Cf7_Csv_Exporter {
 
 		// Schedule the cron job if it's not already scheduled
 		if (!wp_next_scheduled('daily_csv_cleanup')) {
-			wp_schedule_event(strtotime('10:00:00 UTC'), 'daily', 'daily_csv_cleanup');
+			wp_schedule_event(strtotime('08:00:00 UTC'), 'daily', 'daily_csv_cleanup');
 		}
 	}
 
