@@ -133,19 +133,12 @@ class Cf7_Csv_Exporter_Public {
 		$target_form_id = get_option($option_name_contact_form_id);
 	
 		// Check if the form ID matches
-		error_log('CF7 Export Triggered');
 		$form_id = (string) $contact_form->id();
-		error_log('Form ID: ' . $form_id);
 
 		if (!$this->compare_form_id_with_shortcode($target_form_id, $form_id)) {
 			return;
 		}
-	
-		// if ($form_id !== $target_form_id) {
-		// 	error_log('Form ID does not match. Expected: ' . $target_form_id . ', Found: ' . $form_id);
-		// 	return;
-		// }
-	
+		
 		$submission = WPCF7_Submission::get_instance();
 		if (!$submission) {
 			error_log('No submission instance found');
@@ -157,9 +150,7 @@ class Cf7_Csv_Exporter_Public {
 			error_log('No data found');
 			return;
 		}
-	
-		error_log("Current Url: " . $_SERVER['HTTP_REFERER']);
-	
+		
 		$upload_dir = wp_upload_dir();
 		$csv_dir = $upload_dir['basedir'] . '/cf7-submissions/';
 	
@@ -183,8 +174,6 @@ class Cf7_Csv_Exporter_Public {
 			error_log('HTTP_REFERER is not set');
 			return;
 		}
-	
-		error_log('CSV file path: ' . $csv_file);
 	
 		// Ensure the directory exists
 		if (!file_exists($csv_dir)) {
@@ -215,8 +204,6 @@ class Cf7_Csv_Exporter_Public {
 		// Close the file
 		fclose($file);
 	
-		error_log('CSV Exported to ' . $csv_file);
-
 		$option_name_sftp_host = 'sftp_host_for_csv_exporter';
 
 		$option_name_sftp_port = 'sftp_port_for_csv_exporter';
@@ -238,7 +225,7 @@ class Cf7_Csv_Exporter_Public {
 		$sftp_port = $value_sftp_port; // Default SFTP port
 		$sftp_username = $value_sftp_user;
 		$sftp_password = $value_sftp_pass;
-		$remote_file = '/import/' . basename($csv_file);
+		$remote_file = '/Import/' . basename($csv_file);
 	
 		// Create SFTP connection
 		$sftp = new SFTP($sftp_host, $sftp_port);
@@ -265,7 +252,6 @@ class Cf7_Csv_Exporter_Public {
 	}
 	
 	function cleanup_csv_files() {
-		error_log('Custom cron job ran at ' . date('Y-m-d H:i:s'));
 
 		// Get the upload directory
 		$upload_dir = wp_upload_dir();
@@ -289,7 +275,7 @@ class Cf7_Csv_Exporter_Public {
 		$sftp = new SFTP($sftp_host, $sftp_port);
 		if ($sftp->login($sftp_user, $sftp_pass)) {
 			// Delete remote files
-			$remote_dir = '/import/';
+			$remote_dir = '/Import/';
 			$remote_files = $sftp->nlist($remote_dir);
 			foreach ($remote_files as $file) {
 				if (strpos($file, '.csv') !== false) {
