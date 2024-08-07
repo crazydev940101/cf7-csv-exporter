@@ -17,7 +17,7 @@ function cf7_csv_exporter_admin_register() {
     // Add action for handling Location ID
     add_action( "admin_init", 'save_field_callback' );     
     add_settings_section('custom_admin_settings_section', '','section_callback', 'cf7_csv_exporter_admin_menu');
-    add_settings_field('custom_input_field', 'Contact Form ID & SFTP Info', 'input_field_callback', 'cf7_csv_exporter_admin_menu', 'custom_admin_settings_section');
+    add_settings_field('custom_input_field', '', 'input_field_callback', 'cf7_csv_exporter_admin_menu', 'custom_admin_settings_section');
 }
 
 function section_callback() {
@@ -58,7 +58,7 @@ function input_field_callback() {
     echo '<label>Contact Form ID: </label>';
     echo '<input type="text" id="contact_form_id_for_csv_exporter" name="' . $option_name_contact_form_id . '" value="' . esc_attr($value_contact_form_id) . '" />';
 
-    echo '<br/><br/>';
+    echo '<br/><br/><hr style="border-top-color:#ccc;"/><br/>';
 
     echo '<label>SFTP Host: </label>';
     echo '<input type="text" id="sftp_host_for_csv_exporter" name="' . $option_name_sftp_host . '" value="' . esc_attr($value_sftp_host) . '" />';
@@ -76,7 +76,7 @@ function input_field_callback() {
     echo '<br/><br/>';
 
     echo '<label>SFTP Password: </label>';
-    echo '<input type="text" id="sftp_pass_for_csv_exporter" name="' . $option_name_sftp_pass . '" value="' . esc_attr($value_sftp_pass) . '" />';
+    echo '<input type="password" id="sftp_pass_for_csv_exporter" name="' . $option_name_sftp_pass . '" value="' . esc_attr($value_sftp_pass) . '" />';
 }
 
 function save_field_callback() {
@@ -125,7 +125,7 @@ function cf7_csv_exporter_admin_page() {
 
     ?>
 
-        <form method="post" action="options.php">
+        <form method="post" action="options.php" class="cf7-csv-exporter-admin-form">
             <?php                
             cf7_csv_exporter_admin_register();
             settings_fields('cf7_csv_exporter_admin_menu');

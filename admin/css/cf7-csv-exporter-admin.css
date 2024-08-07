@@ -2,3 +2,6 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+ .cf7-csv-exporter-admin-form table th{
+    display: none;
+ }
