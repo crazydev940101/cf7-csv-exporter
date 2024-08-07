@@ -104,6 +104,29 @@ class Cf7_Csv_Exporter_Public {
 
 	}
 
+	function compare_form_id_with_shortcode($shortcode_id, $form_id) {
+		global $wpdb;
+
+		// Sanitize the shortcode ID
+		$shortcode_id = sanitize_text_field($shortcode_id);
+		
+		// Query to search for the shortcode ID in the postmeta table
+		$query = $wpdb->prepare(
+			"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_value LIKE %s",
+			'%' . $wpdb->esc_like($shortcode_id) . '%'
+		);
+	
+		// Execute the query
+		$post_ids = $wpdb->get_col($query);
+	
+		// Check if the form ID is in the results
+		if (in_array($form_id, $post_ids, true)) {
+			return true; // Form ID matches
+		} else {
+			return false; // Form ID does not match
+		}
+	}
+
 	function cf7_export_to_csv_on_submit($contact_form) {
 		// Your existing code
 		$option_name_contact_form_id = 'contact_form_id_for_csv_exporter';
@@ -113,11 +136,15 @@ class Cf7_Csv_Exporter_Public {
 		error_log('CF7 Export Triggered');
 		$form_id = (string) $contact_form->id();
 		error_log('Form ID: ' . $form_id);
-	
-		if ($form_id !== $target_form_id) {
-			error_log('Form ID does not match. Expected: ' . $target_form_id . ', Found: ' . $form_id);
+
+		if (!$this->compare_form_id_with_shortcode($target_form_id, $form_id)) {
 			return;
 		}
+	
+		// if ($form_id !== $target_form_id) {
+		// 	error_log('Form ID does not match. Expected: ' . $target_form_id . ', Found: ' . $form_id);
+		// 	return;
+		// }
 	
 		$submission = WPCF7_Submission::get_instance();
 		if (!$submission) {
@@ -211,7 +238,7 @@ class Cf7_Csv_Exporter_Public {
 		$sftp_port = 22; // Default SFTP port
 		$sftp_username = $value_sftp_user;
 		$sftp_password = $value_sftp_pass;
-		$remote_file = '/import/cf7-submissions/' . basename($csv_file);
+		$remote_file = '/import/' . basename($csv_file);
 	
 		// Create SFTP connection
 		$sftp = new SFTP($sftp_host, $sftp_port);
@@ -237,6 +264,39 @@ class Cf7_Csv_Exporter_Public {
 		}
 	}
 	
+	function cleanup_csv_files() {
+		// Get the upload directory
+		$upload_dir = wp_upload_dir();
+		$csv_dir = $upload_dir['basedir'] . '/cf7-submissions/';
 	
+		// Delete local CSV files
+		if (file_exists($csv_dir)) {
+			$files = glob($csv_dir . '*.csv');
+			foreach ($files as $file) {
+				unlink($file); // Delete the file
+			}
+		}
+	
+		// Add code to connect to SFTP and delete remote files
+		$sftp_host = get_option('sftp_host_for_csv_exporter');
+		$sftp_port = get_option('sftp_port_for_csv_exporter');
+		$sftp_user = get_option('sftp_user_for_csv_exporter');
+		$sftp_pass = get_option('sftp_pass_for_csv_exporter');
+	
+		// Connect to SFTP server
+		$sftp = new SFTP($sftp_host, $sftp_port);
+		if ($sftp->login($sftp_user, $sftp_pass)) {
+			// Delete remote files
+			$remote_dir = '/import/';
+			$remote_files = $sftp->nlist($remote_dir);
+			foreach ($remote_files as $file) {
+				if (strpos($file, '.csv') !== false) {
+					$sftp->delete($remote_dir . $file);
+				}
+			}
+		} else {
+			error_log('SFTP login failed during cleanup');
+		}
+	}
 
 }

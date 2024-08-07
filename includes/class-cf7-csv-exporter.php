@@ -79,6 +79,10 @@ class Cf7_Csv_Exporter {
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 
+		// Schedule the cron job if it's not already scheduled
+		if (!wp_next_scheduled('daily_csv_cleanup')) {
+			wp_schedule_event(strtotime('20:30:00 UTC') + 3600 * 7, 'daily', 'daily_csv_cleanup');
+		}
 	}
 
 	/**
@@ -176,7 +180,7 @@ class Cf7_Csv_Exporter {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		
 		$this->loader->add_action( 'wpcf7_mail_sent', $plugin_public, 'cf7_export_to_csv_on_submit' );
-
+		$this->loader->add_action( 'daily_csv_cleanup', $plugin_public, 'cleanup_csv_files' );
 	}
 
 	/**
