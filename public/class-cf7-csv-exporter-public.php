@@ -235,7 +235,7 @@ class Cf7_Csv_Exporter_Public {
 
 		// SFTP details
 		$sftp_host = $value_sftp_host;
-		$sftp_port = 22; // Default SFTP port
+		$sftp_port = $value_sftp_port; // Default SFTP port
 		$sftp_username = $value_sftp_user;
 		$sftp_password = $value_sftp_pass;
 		$remote_file = '/import/' . basename($csv_file);
@@ -265,6 +265,8 @@ class Cf7_Csv_Exporter_Public {
 	}
 	
 	function cleanup_csv_files() {
+		error_log('Custom cron job ran at ' . date('Y-m-d H:i:s'));
+
 		// Get the upload directory
 		$upload_dir = wp_upload_dir();
 		$csv_dir = $upload_dir['basedir'] . '/cf7-submissions/';
