@@ -189,6 +189,9 @@ class Cf7_Csv_Exporter_Public {
 			error_log('Failed to open file for writing');
 			return;
 		}
+
+		// Set the timezone to Mountain Time
+		date_default_timezone_set('America/Denver');
 	
 		// Add current date to data
 		$data['Date'] = date('Y-m-d H:i:s'); // Include timestamp
